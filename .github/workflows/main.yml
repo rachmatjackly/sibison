@@ -1,50 +1,21 @@
-# This is a basic workflow to help you get started with Actions
-
-name: CI
-
-# Controls when the workflow will run
 on:
-  # Triggers the workflow on push or pull request events but only for the master branch
   push:
-    branches: [ master ]
-  pull_request:
-    branches: [ master ]
-
-  # Allows you to run this workflow manually from the Actions tab
-  workflow_dispatch:
-
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+    branches: [ main ]
+name: 🚀 Deploy website on push
 jobs:
-  # This workflow contains a single job called "build"
-  build:
-    # The type of runner that the job will run on
+  web-deploy:
+    name: 🎉 Auto Deploy
     runs-on: ubuntu-latest
-
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v2
+    - name: 🚚 Get latest code
+      uses: actions/checkout@v2.3.2
 
-      - name: Rsync Deployments Action
-  # You may pin to the exact commit or the version.
-  # uses: Burnett01/rsync-deployments@b943ffe476f772c90f0199d1a180f068f0206e87
-  uses: Burnett01/rsync-deployments@5.1
-  with:
-    # The switches
-    switches: 
-    # The remote shell argument
-    rsh: # optional, default is 
-    # The local path
-    path: # optional, default is 
-    # The remote path
-    remote_path: 
-    # The remote host
-    remote_host: 
-    # The remote port
-    remote_port: # optional, default is 22
-    # The remote user
-    remote_user: 
-    # The remote key
-    remote_key: 
-    # The remote key passphrase
-    remote_key_pass: # optional, default is 
+    - name: 📂 Sync files
+      uses: burnett01/rsync-deployments@4.1
+      with:
+        switches: -avzr --delete --exclude=".git" --exclude=".github"
+        path: /
+        remote_path: /home/sibisonw/public_html/application
+        remote_host: sibison.web.id
+        remote_user: sibisonw
+        remote_key: ${{ secrets.DEPLOY_KEY }}
